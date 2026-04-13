@@ -1,0 +1,77 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Панель редакции Тула ТВ</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        button { padding: 10px 15px; margin: 5px; font-size: 16px; }
+        pre { background: white; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .loading { color: #666; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Панель редакции Тула ТВ</h1>
+
+    <div>
+        <h3>Дайджест и бегущая строка</h3>
+        <button onclick="loadData('digest')">Дайджест</button>
+        <button onclick="loadData('ticker')">Бегущая строка</button>
+    </div>
+
+    <div>
+        <h3>График работы</h3>
+        <button onclick="loadData('schedule/today')">Сегодня</button>
+        <button onclick="loadData('schedule/tomorrow')">Завтра</button>
+        <button onclick="loadData('schedule/week_curr')">Неделя</button>
+    </div>
+
+    <div>
+        <h3>Съёмки</h3>
+        <button onclick="loadData('shootings/today')">Сегодня</button>
+        <button onclick="loadData('shootings/tomorrow')">Завтра</button>
+    </div>
+
+    <div>
+        <h3>Погода</h3>
+        <button onclick="loadData('weather/tomorrow')">Завтра</button>
+        <button onclick="loadData('weather/5days')">5 дней</button>
+    </div>
+
+    <div>
+        <h3>План по дикторам</h3>
+        <button onclick="loadData('dictors')">Показать</button>
+    </div>
+
+    <hr>
+    <pre id="output">Выберите действие...</pre>
+</div>
+
+<script>
+function loadData(endpoint) {
+    const output = document.getElementById('output');
+    output.textContent = 'Загрузка...';
+    output.className = 'loading';
+
+    fetch('/api/' + endpoint)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                output.textContent = data.data;
+                output.className = '';
+            } else {
+                output.textContent = 'Ошибка: ' + data.message;
+                output.className = 'error';
+            }
+        })
+        .catch(err => {
+            output.textContent = 'Ошибка подключения';
+            output.className = 'error';
+        });
+}
+</script>
+</body>
+</html>
